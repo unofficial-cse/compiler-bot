@@ -50,7 +50,7 @@ pub async fn main() {
                 })
             },
             prefix_options: PrefixFrameworkOptions {
-                prefix: Some("!".into()),  // TODO: bikeshed on prefix
+                prefix: Some("!".into()), // TODO: bikeshed on prefix
                 ..Default::default()
             },
             ..Default::default()
@@ -62,7 +62,7 @@ pub async fn main() {
         })
         .build();
 
-    let intents = GatewayIntents::all();  // TODO: detemrine actually required intents
+    let intents = GatewayIntents::all(); // TODO: detemrine actually required intents
     let client = ClientBuilder::new(token, intents)
         .framework(framework)
         .await;
