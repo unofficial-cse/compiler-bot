@@ -16,11 +16,56 @@
  * along with Compiler-Bot.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#![allow(internal_features)]
+#![feature(prelude_future)]
+#![feature(prelude_import)]
+
+use std::env;
+
+use poise::{Framework, FrameworkOptions, PrefixFrameworkOptions};
+use serenity::client::ClientBuilder;
+
+#[allow(unused_imports)] // BUG: items from serenity::prelude::* are actually used elsewhere
+#[prelude_import]
+use prelude::*;
+
+mod prelude;
 mod utils;
 
 #[tokio::main]
 pub async fn main() {
     tracing::subscriber::set_global_default(utils::subscriber()).unwrap();
 
-    println!("Hello, world!");
+    let Ok(token) = env::var("BOT_TOKEN") else {
+        tracing::error!("BOT_TOKEN environment variable is not set");
+        return;
+    };
+
+    let framework = Framework::builder()
+        .options(FrameworkOptions {
+            commands: vec![],
+            on_error: |_| {
+                Box::pin(async move {
+                    // TODO: add error handler
+                })
+            },
+            prefix_options: PrefixFrameworkOptions {
+                prefix: Some("!".into()),  // TODO: bikeshed on prefix
+                ..Default::default()
+            },
+            ..Default::default()
+        })
+        .setup(move |context, _, framework| {
+            Box::pin(async move {
+                poise::builtins::register_globally(context, &framework.options().commands).await
+            })
+        })
+        .build();
+
+    let intents = GatewayIntents::all();  // TODO: detemrine actually required intents
+    let client = ClientBuilder::new(token, intents)
+        .framework(framework)
+        .await;
+
+    client.unwrap().start().await.unwrap()
 }
