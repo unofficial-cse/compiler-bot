@@ -1,4 +1,4 @@
-![compilerBotBanner.svg](meta/compilerBotBanner.svg)
+![compilerBotBanner.svg](meta/compilerBotBanner.png)
 
 # The Unofficial.CSE Compiler Bot
 
