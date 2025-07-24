@@ -8,3 +8,9 @@ repository = "https://github.com/unofficial-cse/compiler-bot"
 readme = "README.md"
 
 [dependencies]
+poise = "0.6.1"
+poise_macros = "0.6.1"
+serenity = { version = "0.12.4", features = ["client", "gateway"] }
+tokio = { version = "1.46.1", features = ["rt-multi-thread"] }
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["local-time"] }

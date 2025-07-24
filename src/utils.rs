@@ -16,11 +16,23 @@
  * along with Compiler-Bot.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-mod utils;
+use tracing::{Subscriber, level_filters::LevelFilter};
+use tracing_subscriber::{
+    Registry,
+    filter::Targets,
+    fmt::{Layer, time::OffsetTime},
+    layer::SubscriberExt,
+};
 
-#[tokio::main]
-pub async fn main() {
-    tracing::subscriber::set_global_default(utils::subscriber()).unwrap();
+pub fn subscriber() -> impl Subscriber {
+    let fmt_layer = Layer::default()
+        .pretty()
+        .with_timer(OffsetTime::local_rfc_3339().unwrap())
+        .with_target(true)
+        .with_level(true)
+        .with_file(true)
+        .with_line_number(true);
+    let targets_layer = Targets::new().with_default(LevelFilter::TRACE);
 
-    println!("Hello, world!");
+    Registry::default().with(fmt_layer).with(targets_layer)
 }
