@@ -1,0 +1,10 @@
+[package]
+name = "compiler-bot"
+authors = [ "Unofficial.CSE Contributors" ]
+edition = "2024"
+version = "0.1.0"
+license = "AGPL-3"
+repository = "https://github.com/unofficial-cse/compiler-bot"
+readme = "README.md"
+
+[dependencies]
