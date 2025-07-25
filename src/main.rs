@@ -18,6 +18,7 @@
 
 use std::env;
 
+use dotenv::dotenv;
 use poise::{Framework, FrameworkOptions, PrefixFrameworkOptions};
 use serenity::client::ClientBuilder;
 
@@ -28,6 +29,8 @@ mod utils;
 
 #[tokio::main]
 pub async fn main() {
+    dotenv().ok();
+    
     tracing::subscriber::set_global_default(utils::subscriber()).unwrap();
 
     let Ok(token) = env::var("BOT_TOKEN") else {
