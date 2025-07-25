@@ -19,7 +19,7 @@
 use crate::{Context, Error};
 
 /// Compile and run code
-#[poise::command(prefix_command, slash_command)]
+#[poise::command(prefix_command)]
 pub async fn compile(
     ctx: Context<'_>,
     #[description = "The language to compile the code in"] language: String,
