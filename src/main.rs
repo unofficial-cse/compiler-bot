@@ -18,19 +18,25 @@
 
 use std::env;
 
+use commands::{compile, info};
+
 use dotenvy::dotenv;
 use poise::{Framework, FrameworkOptions, PrefixFrameworkOptions};
 use serenity::client::ClientBuilder;
 
 use prelude::*;
 
+mod commands;
 mod prelude;
 mod utils;
+
+type Error = Box<dyn std::error::Error + Send + Sync>;
+type Context<'a> = poise::Context<'a, (), Error>;
 
 #[tokio::main]
 pub async fn main() {
     dotenv().ok();
-    
+
     tracing::subscriber::set_global_default(utils::subscriber()).unwrap();
 
     let Ok(token) = env::var("BOT_TOKEN") else {
@@ -38,9 +44,11 @@ pub async fn main() {
         return;
     };
 
+    let commands = vec![info::help(), compile::compile()];
+
     let framework = Framework::builder()
         .options(FrameworkOptions {
-            commands: vec![],
+            commands,
             on_error: |_| {
                 Box::pin(async move {
                     // TODO: add error handler
@@ -54,7 +62,8 @@ pub async fn main() {
         })
         .setup(move |context, _, framework| {
             Box::pin(async move {
-                poise::builtins::register_globally(context, &framework.options().commands).await
+                poise::builtins::register_globally(context, &framework.options().commands).await?;
+                Ok(())
             })
         })
         .build();
