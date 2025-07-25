@@ -33,7 +33,7 @@ pub async fn compile(
     ctx.say(&format!("Compiling code in {language} language"))
         .await?;
 
-    // TODO: compile and runthe code
+    // TODO: compile and run the code
 
     Ok(())
 }
