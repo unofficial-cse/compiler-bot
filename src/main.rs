@@ -16,17 +16,12 @@
  * along with Compiler-Bot.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#![allow(internal_features)]
-#![feature(prelude_future)]
-#![feature(prelude_import)]
-
 use std::env;
 
+use dotenvy::dotenv;
 use poise::{Framework, FrameworkOptions, PrefixFrameworkOptions};
 use serenity::client::ClientBuilder;
 
-#[allow(unused_imports)] // BUG: items from serenity::prelude::* are actually used elsewhere
-#[prelude_import]
 use prelude::*;
 
 mod prelude;
@@ -34,6 +29,8 @@ mod utils;
 
 #[tokio::main]
 pub async fn main() {
+    dotenv().ok();
+    
     tracing::subscriber::set_global_default(utils::subscriber()).unwrap();
 
     let Ok(token) = env::var("BOT_TOKEN") else {

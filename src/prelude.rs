@@ -16,7 +16,4 @@
  * along with Compiler-Bot.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-pub use std::prelude::rust_future::*;
-
-#[allow(unused_imports)] // BUG: items from serenity::prelude::* are actually used elsewhere
 pub use serenity::prelude::*;
