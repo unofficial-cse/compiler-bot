@@ -216,6 +216,7 @@ dependencies = [
  "dotenvy",
  "poise",
  "poise_macros",
+ "regex",
  "serenity",
  "tokio",
  "tracing",

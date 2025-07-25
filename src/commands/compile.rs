@@ -16,7 +16,7 @@
  * along with Compiler-Bot.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use crate::{Context, Error};
+use crate::{Context, Error, utils::extract_code_block};
 
 /// Compile and run code
 #[poise::command(prefix_command)]
@@ -27,8 +27,17 @@ pub async fn compile(
     #[rest]
     code: String,
 ) -> Result<(), Error> {
+    let code_block = extract_code_block(&code);
+
+    if code_block.is_none() || code_block.as_ref().unwrap().is_empty() {
+        ctx.say("No code block found in the message").await?;
+        return Ok(());
+    }
+
+    let code_block = code_block.unwrap();
+
     println!("Compiling code in {language} language");
-    println!("Code: {code}");
+    println!("Code: {code_block}");
 
     ctx.say(&format!("Compiling code in {language} language"))
         .await?;
