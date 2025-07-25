@@ -8,7 +8,7 @@ repository = "https://github.com/unofficial-cse/compiler-bot"
 readme = "README.md"
 
 [dependencies]
-dotenv = "0.15.0"
+dotenvy = "0.15.7"
 poise = "0.6.1"
 poise_macros = "0.6.1"
 serenity = { version = "0.12.4", features = ["builder", "client", "gateway"] }
