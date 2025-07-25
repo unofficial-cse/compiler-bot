@@ -17,6 +17,8 @@
  */
 
 use crate::{Context, Error};
+use poise::CreateReply;
+use poise::serenity_prelude::CreateEmbed;
 
 /// Show this help menu
 #[poise::command(prefix_command, slash_command)]
@@ -33,5 +35,26 @@ pub async fn help(
          },
      )
      .await?;
+    Ok(())
+}
+
+/// List supported languages for compilation
+#[poise::command(prefix_command, slash_command)]
+pub async fn languages(ctx: Context<'_>) -> Result<(), Error> {
+    // TODO: list supported languages from runtime config
+    let supported_languages = ["c", "cpp", "scala", "python", "javascript", "typescript"];
+
+    let language_list = supported_languages
+        .iter()
+        .map(|lang| format!("`{lang}`"))
+        .collect::<Vec<_>>()
+        .join(", ");
+
+    let embed = CreateEmbed::new()
+        .title("Supported Programming Languages")
+        .description(language_list);
+
+    ctx.send(CreateReply::default().embed(embed)).await?;
+
     Ok(())
 }

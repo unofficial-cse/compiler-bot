@@ -44,7 +44,7 @@ pub async fn main() {
         return;
     };
 
-    let commands = vec![info::help(), compile::compile()];
+    let commands = vec![info::help(), compile::compile(), info::languages()];
 
     let framework = Framework::builder()
         .options(FrameworkOptions {
