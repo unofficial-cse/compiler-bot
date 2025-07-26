@@ -18,13 +18,12 @@
 
 use std::env;
 
-use commands::{compile, info};
-
 use dotenvy::dotenv;
 use poise::{Framework, FrameworkOptions, PrefixFrameworkOptions};
 use serenity::client::ClientBuilder;
 
-use prelude::*;
+use crate::commands::{compile, info};
+use crate::prelude::*;
 
 mod commands;
 mod config;

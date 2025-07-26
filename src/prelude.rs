@@ -16,4 +16,5 @@
  * along with Compiler-Bot.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+pub use poise::serenity_prelude::*;
 pub use serenity::prelude::*;

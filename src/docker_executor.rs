@@ -1,13 +1,12 @@
-use crate::config::BotConfig;
+use std::{collections::HashMap, process::Stdio, time::Duration};
+
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::process::Stdio;
-use std::time::Duration;
-use tokio::io::AsyncWriteExt;
-use tokio::process::Command;
+use tokio::{io::AsyncWriteExt, process::Command};
 use uuid::Uuid;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+use crate::config::BotConfig;
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LanguageConfig {
     pub image: String,
     pub cmd: Option<String>,
