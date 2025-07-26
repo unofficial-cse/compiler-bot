@@ -1,9 +1,9 @@
 # https://doc.rust-lang.org/nightly/clippy/continuous_integration/github_actions.html
 on:
-    pull_request:
-    push:
-        branches:
-            - main
+  pull_request:
+  push:
+    branches:
+      - main
 
 name: Lints
 
