@@ -1,13 +1,12 @@
-use crate::config::BotConfig;
+use std::{collections::HashMap, process::Stdio, time::Duration};
+
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::process::Stdio;
-use std::time::Duration;
-use tokio::io::AsyncWriteExt;
-use tokio::process::Command;
+use tokio::{io::AsyncWriteExt, process::Command};
 use uuid::Uuid;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+use crate::config::BotConfig;
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LanguageConfig {
     pub image: String,
     pub cmd: Option<String>,
@@ -139,7 +138,7 @@ impl DockerExecutor {
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
 
-        tracing::info!("Executing Docker command for language: {}", language);
+        tracing::info!("Executing Docker command for language: {language}");
 
         // Start the process
         let mut child = docker_cmd
@@ -149,7 +148,7 @@ impl DockerExecutor {
         // Write code to stdin
         if let Some(mut stdin) = child.stdin.take() {
             if let Err(e) = stdin.write_all(code.as_bytes()).await {
-                tracing::error!("Failed to write to stdin: {}", e);
+                tracing::error!("Failed to write to stdin: {e}");
                 // Try to kill the container
                 let _ = Self::kill_container(&container_name).await;
                 return Err(format!("Failed to write code to container: {e}"));
@@ -203,20 +202,20 @@ impl DockerExecutor {
         match kill_result {
             Ok(Ok(output)) => {
                 if output.status.success() {
-                    tracing::info!("Successfully killed container: {}", container_name);
+                    tracing::info!("Successfully killed container: {container_name}");
                     Ok(())
                 } else {
                     let error = String::from_utf8_lossy(&output.stderr);
-                    tracing::error!("Failed to kill container {}: {}", container_name, error);
+                    tracing::error!("Failed to kill container {container_name}: {error}");
                     Err(format!("Failed to kill container: {error}"))
                 }
             }
             Ok(Err(e)) => {
-                tracing::error!("Error executing docker kill: {}", e);
+                tracing::error!("Error executing docker kill: {e}");
                 Err(format!("Error executing docker kill: {e}"))
             }
             Err(_) => {
-                tracing::error!("Timeout while killing container: {}", container_name);
+                tracing::error!("Timeout while killing container: {container_name}");
                 Err("Timeout while killing container".into())
             }
         }

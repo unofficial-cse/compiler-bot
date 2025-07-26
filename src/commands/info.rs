@@ -16,10 +16,9 @@
  * along with Compiler-Bot.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use crate::docker_executor::DockerExecutor;
-use crate::{Context, Error};
 use poise::CreateReply;
-use poise::serenity_prelude::CreateEmbed;
+
+use crate::{Context, Error, docker_executor::DockerExecutor, prelude::*};
 
 /// Show this help menu
 #[poise::command(prefix_command, slash_command)]
@@ -28,23 +27,20 @@ pub async fn help(
     #[description = "Specific command to show help about"] command: Option<String>,
 ) -> Result<(), Error> {
     poise::builtins::help(
-         ctx,
-         command.as_deref(),
-         poise::builtins::HelpConfiguration {
-             extra_text_at_bottom: "Compiler-Bot is a bot that compiles and runs code for you. It supports multiple languages.",
-             ..Default::default()
-         },
-     )
-     .await?;
+        ctx,
+        command.as_deref(),
+        poise::builtins::HelpConfiguration {
+            extra_text_at_bottom: "Compiler-Bot is a bot that compiles and runs code for you. It supports multiple languages.",
+            ..Default::default()
+        },
+    )
+    .await?;
     Ok(())
 }
-
-
 
 /// List supported languages for compilation
 #[poise::command(prefix_command, slash_command)]
 pub async fn languages(ctx: Context<'_>) -> Result<(), Error> {
-    // // TODO: list supported languages from runtime config
     let supported_languages = DockerExecutor::new().supported_languages();
 
     let language_list = supported_languages
