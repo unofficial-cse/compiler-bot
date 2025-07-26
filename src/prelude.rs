@@ -17,4 +17,3 @@
  */
 
 pub use poise::serenity_prelude::*;
-pub use serenity::prelude::*;
