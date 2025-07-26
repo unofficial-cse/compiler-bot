@@ -16,33 +16,106 @@
  * along with Compiler-Bot.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use crate::{Context, Error, utils::extract_code_block};
+use crate::{Context, Error, docker_executor::DockerExecutor, utils::extract_code_block};
 
 /// Compile and run code
-#[poise::command(prefix_command)]
+#[poise::command(prefix_command, slash_command)]
 pub async fn compile(
     ctx: Context<'_>,
     #[description = "The language to compile the code in"] language: String,
-    #[description = "The code to compile"]
-    #[rest]
-    code: String,
+    #[description = "The code to compile"] #[rest] code: String,
 ) -> Result<(), Error> {
     let code_block = extract_code_block(&code);
-
-    if code_block.is_none() || code_block.as_ref().unwrap().is_empty() {
-        ctx.say("No code block found in the message").await?;
+    if code_block.is_none() {
+        ctx.say("No code block found").await?;
         return Ok(());
     }
-
-    let code_block = code_block.unwrap();
-
-    println!("Compiling code in {language} language");
-    println!("Code: {code_block}");
-
-    ctx.say(&format!("Compiling code in {language} language"))
-        .await?;
-
-    // TODO: compile and run the code
+    
+    let code_to_execute = code_block.unwrap();
+    let language_lower = language.to_lowercase();
+    
+    // Send initial response
+    let initial_embed = poise::serenity_prelude::CreateEmbed::new()
+        .title(format!("🔄 Executing {language} code"))
+        .description(format!("```{language}\n{code_to_execute}\n```"))
+        .color(0xFFFF00); // Yellow for "running"
+    
+    let reply = ctx.send(poise::CreateReply::default().embed(initial_embed)).await?;
+    
+    // Execute the code
+    let execution_result = DockerExecutor::new().execute(&language_lower, &code_to_execute).await;
+    
+    // Prepare the result embed
+    let result_embed = match execution_result {
+        Ok(result) => {
+            let status_emoji = if result.exit_code == Some(0) && !result.timed_out {
+                "✅"
+            } else if result.timed_out {
+                "⏰"
+            } else {
+                "❌"
+            };
+            
+            let color = if result.exit_code == Some(0) && !result.timed_out {
+                0x00FF00 // Green for success
+            } else if result.timed_out {
+                0xFF8800 // Orange for timeout
+            } else {
+                0xFF0000 // Red for error
+            };
+            
+            let mut embed = poise::serenity_prelude::CreateEmbed::new()
+                .title(format!("{status_emoji} Execution result"))
+                .color(color);
+            
+            // Add stdout if present
+            if !result.stdout.is_empty() {
+                let max_len = DockerExecutor::new().config.output.max_output_length;
+                let stdout_content = if result.stdout.len() > max_len {
+                    format!("{}{}", &result.stdout[..max_len], DockerExecutor::new().config.output.truncate_suffix)
+                } else {
+                    result.stdout.clone()
+                };
+                embed = embed.field("Output", format!("```\n{stdout_content}\n```"), false);
+            }
+            
+            // Add stderr if present
+            if !result.stderr.is_empty() {
+                let max_len = DockerExecutor::new().config.output.max_output_length;
+                let stderr_content = if result.stderr.len() > max_len {
+                    format!("{}{}", &result.stderr[..max_len], DockerExecutor::new().config.output.truncate_suffix)
+                } else {
+                    result.stderr.clone()
+                };
+                embed = embed.field("Error", format!("```\n{stderr_content}\n```"), false);
+            }
+            
+            // Add execution info
+            let mut execution_info = String::new();
+            if let Some(code) = result.exit_code {
+                execution_info.push_str(&format!("Exit code: {code}\n"));
+            }
+            if result.timed_out {
+                execution_info.push_str("⚠️ Execution timed out\n");
+            }
+            if !execution_info.is_empty() && result.exit_code != Some(0) {
+                embed = embed.field("Execution Info", execution_info, true);
+            }
+            
+            embed
+        }
+        Err(error) => {
+            poise::serenity_prelude::CreateEmbed::new()
+                .title("❌ Execution failed")
+                .description(format!("Failed to execute {language} code"))
+                .field("Error", format!("```\n{error}\n```"), false)
+                .field("Source Code", format!("```{language}\n{code_to_execute}\n```"), false)
+                .color(0xFF0000) // Red for error
+        }
+    };
+    
+    // Update the message with the result
+    reply.edit(ctx, poise::CreateReply::default().embed(result_embed)).await?;
 
     Ok(())
 }

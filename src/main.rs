@@ -27,6 +27,8 @@ use serenity::client::ClientBuilder;
 use prelude::*;
 
 mod commands;
+mod config;
+mod docker_executor;
 mod prelude;
 mod utils;
 

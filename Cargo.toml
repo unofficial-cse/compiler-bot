@@ -12,7 +12,9 @@ dotenvy = "0.15.7"
 poise = "0.6.1"
 poise_macros = "0.6.1"
 regex = "1.11.1"
+serde = "1.0.219"
 serenity = { version = "0.12.4", features = ["builder", "client", "gateway"] }
-tokio = { version = "1.46.1", features = ["rt-multi-thread"] }
+tokio = { version = "1.46.1", features = ["rt-multi-thread", "process"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["local-time"] }
+uuid = { version = "1.17.0", features = ["v4"] }
