@@ -16,6 +16,7 @@
  * along with Compiler-Bot.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+use crate::docker_executor::DockerExecutor;
 use crate::{Context, Error};
 use poise::CreateReply;
 use poise::serenity_prelude::CreateEmbed;
@@ -38,11 +39,13 @@ pub async fn help(
     Ok(())
 }
 
+
+
 /// List supported languages for compilation
 #[poise::command(prefix_command, slash_command)]
 pub async fn languages(ctx: Context<'_>) -> Result<(), Error> {
-    // TODO: list supported languages from runtime config
-    let supported_languages = ["c", "cpp", "scala", "python", "javascript", "typescript"];
+    // // TODO: list supported languages from runtime config
+    let supported_languages = DockerExecutor::new().supported_languages();
 
     let language_list = supported_languages
         .iter()
