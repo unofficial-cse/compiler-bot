@@ -18,13 +18,13 @@
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct BotConfig {
     pub security: SecurityConfig,
     pub output: OutputConfig,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SecurityConfig {
     pub cpu_limit: String,
     pub memory_limit: String,
@@ -34,7 +34,7 @@ pub struct SecurityConfig {
     pub timeout_duration: u64,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct OutputConfig {
     pub max_output_length: usize,
     pub truncate_suffix: String,

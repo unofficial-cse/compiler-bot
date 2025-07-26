@@ -16,15 +16,16 @@
  * along with Compiler-Bot.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use std::env;
+#![deny(warnings)]
 
-use commands::{compile, info};
+use std::env;
 
 use dotenvy::dotenv;
 use poise::{Framework, FrameworkOptions, PrefixFrameworkOptions};
 use serenity::client::ClientBuilder;
 
-use prelude::*;
+use crate::commands::{compile, info};
+use crate::prelude::*;
 
 mod commands;
 mod config;
