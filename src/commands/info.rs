@@ -18,14 +18,14 @@
 
 use poise::CreateReply;
 
-use crate::{Context, Error, docker_executor::DockerExecutor, prelude::*};
+use crate::{CompilerBotContext, CompilerBotError, docker_executor::DockerExecutor, prelude::*};
 
 /// Show this help menu
 #[poise::command(prefix_command, slash_command)]
 pub async fn help(
-    ctx: Context<'_>,
+    ctx: CompilerBotContext<'_>,
     #[description = "Specific command to show help about"] command: Option<String>,
-) -> Result<(), Error> {
+) -> Result<(), CompilerBotError> {
     poise::builtins::help(
         ctx,
         command.as_deref(),
@@ -40,7 +40,7 @@ pub async fn help(
 
 /// List supported languages for compilation
 #[poise::command(prefix_command, slash_command)]
-pub async fn languages(ctx: Context<'_>) -> Result<(), Error> {
+pub async fn languages(ctx: CompilerBotContext<'_>) -> Result<(), CompilerBotError> {
     let supported_languages = DockerExecutor::new().supported_languages();
 
     let language_list = supported_languages

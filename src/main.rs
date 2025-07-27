@@ -18,10 +18,10 @@
 
 #![deny(warnings)]
 
-use std::env;
+use std::{env, error::Error};
 
 use dotenvy::dotenv;
-use poise::{Framework, FrameworkOptions, PrefixFrameworkOptions};
+use poise::{Context, Framework, FrameworkOptions, PrefixFrameworkOptions};
 use serenity::client::ClientBuilder;
 
 use crate::commands::{compile, info};
@@ -31,10 +31,11 @@ mod commands;
 mod config;
 mod docker_executor;
 mod prelude;
+mod runners;
 mod utils;
 
-type Error = Box<dyn std::error::Error + Send + Sync>;
-type Context<'a> = poise::Context<'a, (), Error>;
+type CompilerBotError = Box<dyn Error + Send + Sync>;
+type CompilerBotContext<'a> = Context<'a, (), CompilerBotError>;
 
 #[tokio::main]
 pub async fn main() {
