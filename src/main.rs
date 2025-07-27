@@ -24,8 +24,10 @@ use dotenvy::dotenv;
 use poise::{Context, Framework, FrameworkOptions, PrefixFrameworkOptions};
 use serenity::client::ClientBuilder;
 
-use crate::commands::{compile, info};
-use crate::prelude::*;
+use crate::{
+    commands::{compile, info},
+    prelude::*,
+};
 
 mod commands;
 mod config;
