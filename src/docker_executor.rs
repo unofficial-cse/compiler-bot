@@ -1,18 +1,27 @@
-use std::{collections::HashMap, process::Stdio, time::Duration};
+/*
+ * Compiler-Bot: compiler bot for Unofficial.CSE
+ * Copyright (C) 2025  Unofficial.CSE contributors
+ *
+ * Compiler-Bot is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Compiler-Bot is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with Compiler-Bot.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
-use serde::{Deserialize, Serialize};
+use std::{process::Stdio, time::Duration};
+
 use tokio::{io::AsyncWriteExt, process::Command};
 use uuid::Uuid;
 
-use crate::config::BotConfig;
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct LanguageConfig {
-    pub image: String,
-    pub cmd: Option<String>,
-    pub file_extension: String,
-    pub is_compiled: bool,
-}
+use crate::{config::BotConfig, runners::LANGUAGES};
 
 #[derive(Debug)]
 pub struct ExecutionResult {
@@ -23,60 +32,18 @@ pub struct ExecutionResult {
 }
 
 pub struct DockerExecutor {
-    languages: HashMap<String, LanguageConfig>,
     pub config: BotConfig,
 }
 
 impl DockerExecutor {
     pub fn new() -> Self {
-        let mut languages = HashMap::new();
-
-        // Python
-        languages.insert(
-            "python".into(),
-            LanguageConfig {
-                image: "compiler-bot-python-rt:latest".into(),
-                cmd: Some("python3".into()),
-                file_extension: "py".into(),
-                is_compiled: false,
-            },
-        );
-
-        // C
-        languages.insert("c".into(), LanguageConfig {
-            image: "compiler-bot-c-rt:latest".into(),
-            cmd: Some("bash -c 'cat > /tmp/program.c && gcc -std=c11 -Wall -Wextra -o /tmp/program /tmp/program.c && /tmp/program'".into()),
-            file_extension: "c".into(),
-            is_compiled: true,
-        });
-
-        // C++
-        languages.insert("cpp".into(), LanguageConfig {
-            image: "compiler-bot-cpp-rt:latest".into(),
-            cmd: Some("bash -c 'cat > /tmp/program.cpp && g++ -std=c++17 -Wall -Wextra -o /tmp/program /tmp/program.cpp && /tmp/program'".into()),
-            file_extension: "cpp".into(),
-            is_compiled: true,
-        });
-
-        // Node.js (JavaScript)
-        languages.insert(
-            "js".into(),
-            LanguageConfig {
-                image: "compiler-bot-node-rt:latest".into(),
-                cmd: Some("node".into()),
-                file_extension: "js".into(),
-                is_compiled: false,
-            },
-        );
-
         Self {
-            languages,
             config: BotConfig::default(),
         }
     }
 
-    pub fn supported_languages(&self) -> Vec<String> {
-        self.languages.keys().cloned().collect()
+    pub fn supported_languages(&self) -> Vec<&'static str> {
+        LANGUAGES.keys().copied().collect()
     }
 
     pub async fn execute(&self, language: &str, code: &str) -> Result<ExecutionResult, String> {
@@ -90,8 +57,7 @@ impl DockerExecutor {
             });
         }
 
-        let config = self
-            .languages
+        let config = LANGUAGES
             .get(language)
             .ok_or_else(|| format!("Unsupported language: {language}"))?;
 
@@ -121,15 +87,15 @@ impl DockerExecutor {
             .arg("--security-opt")
             .arg("no-new-privileges:true") // Security hardening
             .arg("-i") // Interactive mode for stdin
-            .arg(&config.image);
+            .arg(config.docker_image());
 
-        // Add command if specified
-        if let Some(cmd) = &config.cmd {
-            if config.is_compiled {
-                docker_cmd.args(["bash", "-c", cmd]);
-            } else {
-                docker_cmd.arg(cmd);
-            }
+        // Add command
+        let command = config.command();
+
+        if config.is_compiled() {
+            docker_cmd.args(["bash", "-c", command]);
+        } else {
+            docker_cmd.arg(command);
         }
 
         // Configure stdio

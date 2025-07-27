@@ -19,18 +19,19 @@
 use poise::CreateReply;
 
 use crate::{
-    Context, Error, docker_executor::DockerExecutor, prelude::*, utils::extract_code_block,
+    CompilerBotContext, CompilerBotError, docker_executor::DockerExecutor, prelude::*,
+    utils::extract_code_block,
 };
 
 /// Compile and run code
 #[poise::command(prefix_command)]
 pub async fn compile(
-    ctx: Context<'_>,
+    ctx: CompilerBotContext<'_>,
     #[description = "The language to compile the code in"] language: String,
     #[description = "The code to compile"]
     #[rest]
     code: String,
-) -> Result<(), Error> {
+) -> Result<(), CompilerBotError> {
     let code_block = extract_code_block(&code);
     if code_block.is_none() {
         ctx.say("No code block found").await?;

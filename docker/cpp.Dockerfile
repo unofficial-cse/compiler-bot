@@ -7,11 +7,8 @@ RUN apt-get update && apt-get install -y \
     valgrind \
     && rm -rf /var/lib/apt/lists/*
 
-# Create code directory
-RUN mkdir -p /code
-
 # Set working directory
-WORKDIR /code
+WORKDIR /
 
 # Default command - we'll compile and run C++ code using a temporary file
-CMD ["bash", "-c", "cat > /tmp/program.cpp && g++ -std=c++17 -Wall -Wextra -o /tmp/program /tmp/program.cpp && /tmp/program"] 
+CMD ["bash"]

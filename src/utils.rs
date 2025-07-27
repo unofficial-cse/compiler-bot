@@ -41,25 +41,25 @@ pub fn subscriber() -> impl Subscriber {
 pub fn extract_code_block(code: &str) -> Option<String> {
     // Try to match code blocks with language specifiers
     let regex_with_lang = Regex::new(r"```(?:[a-zA-Z0-9]*)\n([\s\S]+?)```").unwrap();
-    if let Some(captures) = regex_with_lang.captures(code) {
-        if let Some(matched_code) = captures.get(1) {
-            // Remove the backticks and language specifier
-            let extracted_code = matched_code.as_str().trim();
-            if !extracted_code.is_empty() {
-                return Some(extracted_code.to_string());
-            }
+    if let Some(captures) = regex_with_lang.captures(code)
+        && let Some(matched_code) = captures.get(1)
+    {
+        // Remove the backticks and language specifier
+        let extracted_code = matched_code.as_str().trim();
+        if !extracted_code.is_empty() {
+            return Some(extracted_code.to_string());
         }
     }
 
     // Try to match code blocks WITHOUT language specifiers
     let regex_plain = Regex::new(r"```([\s\S]+?)```").unwrap();
-    if let Some(captures) = regex_plain.captures(code) {
-        if let Some(matched_code) = captures.get(1) {
-            let extracted_code = matched_code.as_str().trim();
+    if let Some(captures) = regex_plain.captures(code)
+        && let Some(matched_code) = captures.get(1)
+    {
+        let extracted_code = matched_code.as_str().trim();
 
-            if !extracted_code.is_empty() {
-                return Some(extracted_code.to_string());
-            }
+        if !extracted_code.is_empty() {
+            return Some(extracted_code.to_string());
         }
     }
 
