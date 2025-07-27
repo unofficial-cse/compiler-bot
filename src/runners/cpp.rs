@@ -22,7 +22,7 @@ pub struct Cpp;
 
 impl Language for Cpp {
     fn command(&self) -> &'static str {
-        "bash -c 'cat > /tmp/program.cpp && g++ -std=c++17 -Wall -Wextra -o /tmp/program /tmp/program.cpp && /tmp/program'"
+        "bash -c 'cat > /output.cpp && g++ -std=c++17 -Wall -Wextra -o /output /output.cpp && /output'"
     }
 
     fn docker_image(&self) -> &'static str {

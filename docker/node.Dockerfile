@@ -3,11 +3,8 @@ FROM node:lts-slim
 # Install common packages (if needed in the future)
 # RUN npm install -g typescript ts-node
 
-# Create code directory
-RUN mkdir -p /code
-
 # Set working directory
-WORKDIR /code
+WORKDIR /
 
 # Set environment variables
 ENV NODE_ENV=sandbox
