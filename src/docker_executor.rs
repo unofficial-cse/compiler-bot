@@ -69,7 +69,7 @@ impl DockerExecutor {
             .arg("--security-opt")
             .arg("no-new-privileges:true") // Security hardening
             .arg("-i") // Interactive mode for stdin
-            .arg(&config.docker_image());
+            .arg(config.docker_image());
 
         // Add command
         let command = config.command();
