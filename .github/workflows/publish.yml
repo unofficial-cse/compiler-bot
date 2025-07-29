@@ -1,0 +1,39 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  publish:
+    name: Publish for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: compiler-bot-linux-x86_64
+            target: x86_64-unknown-linux-gnu
+         
+          - os: ubuntu-24.04-arm
+            artifact_name: compiler-bot-linux-aarch64
+            target: aarch64-unknown-linux-gnu
+
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          target: ${{ matrix.target }}
+
+      - run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: target/${{ matrix.target }}/release/compiler-bot
