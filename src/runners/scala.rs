@@ -16,31 +16,28 @@
  * along with Compiler-Bot.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-use std::{collections::HashMap, sync::LazyLock};
+use super::Language;
 
-mod cpp;
-mod python;
-mod scala;
+pub struct Scala;
 
-pub static LANGUAGES: LazyLock<HashMap<&'static str, Box<dyn Language + Send + Sync>>> =
-    LazyLock::new(|| {
-        let mut hashmap = HashMap::<&'static str, Box<dyn Language + Send + Sync>>::new();
-        hashmap.insert(cpp::Cpp.name(), Box::new(cpp::Cpp));
-        hashmap.insert(python::Python.name(), Box::new(python::Python));
-        hashmap.insert(scala::Scala.name(), Box::new(scala::Scala));
+impl Language for Scala {
+    fn command(&self) -> &'static str {
+        "bash -c 'cat > /Main.scala && scala /Main.scala'"
+    }
 
-        hashmap
-    });
+    fn docker_image(&self) -> &'static str {
+        "compiler-bot-scala-rt:latest"
+    }
 
-pub trait Language {
-    fn command(&self) -> &'static str;
+    fn file_extension(&self) -> &'static str {
+        "scala"
+    }
 
-    fn docker_image(&self) -> &'static str;
+    fn is_compiled(&self) -> bool {
+        true
+    }
 
-    #[allow(dead_code)]
-    fn file_extension(&self) -> &'static str;
-
-    fn is_compiled(&self) -> bool;
-
-    fn name(&self) -> &'static str;
+    fn name(&self) -> &'static str {
+        "scala"
+    }
 }
