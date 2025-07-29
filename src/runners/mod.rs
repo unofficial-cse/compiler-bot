@@ -18,6 +18,8 @@
 
 use std::{collections::HashMap, sync::LazyLock};
 
+use crate::config::SecurityConfig;
+
 mod cpp;
 mod python;
 mod scala;
@@ -43,4 +45,6 @@ pub trait Language {
     fn is_compiled(&self) -> bool;
 
     fn name(&self) -> &'static str;
+
+    fn security_config(&self) -> SecurityConfig;
 }

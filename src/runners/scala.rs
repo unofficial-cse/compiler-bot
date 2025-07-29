@@ -17,6 +17,7 @@
  */
 
 use super::Language;
+use crate::config::SecurityConfig;
 
 pub struct Scala;
 
@@ -39,5 +40,13 @@ impl Language for Scala {
 
     fn name(&self) -> &'static str {
         "scala"
+    }
+
+    fn security_config(&self) -> SecurityConfig {
+        SecurityConfig {
+            cpu_limit: "0.75".into(),
+            memory_limit: "1024m".into(),
+            ..Default::default()
+        }
     }
 }

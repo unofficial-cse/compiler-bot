@@ -81,12 +81,12 @@ pub async fn compile(
 
             // Add stdout if present
             if !result.stdout.is_empty() {
-                let max_len = DockerExecutor::new().config.output.max_output_length;
+                let max_len = DockerExecutor::new().output.max_output_length;
                 let stdout_content = if result.stdout.len() > max_len {
                     format!(
                         "{}{}",
                         &result.stdout[..max_len],
-                        DockerExecutor::new().config.output.truncate_suffix
+                        DockerExecutor::new().output.truncate_suffix
                     )
                 } else {
                     result.stdout.clone()
@@ -96,12 +96,12 @@ pub async fn compile(
 
             // Add stderr if present
             if !result.stderr.is_empty() {
-                let max_len = DockerExecutor::new().config.output.max_output_length;
+                let max_len = DockerExecutor::new().output.max_output_length;
                 let stderr_content = if result.stderr.len() > max_len {
                     format!(
                         "{}{}",
                         &result.stderr[..max_len],
-                        DockerExecutor::new().config.output.truncate_suffix
+                        DockerExecutor::new().output.truncate_suffix
                     )
                 } else {
                     result.stderr.clone()

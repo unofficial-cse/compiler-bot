@@ -19,12 +19,6 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct BotConfig {
-    pub security: SecurityConfig,
-    pub output: OutputConfig,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SecurityConfig {
     pub cpu_limit: String,
     pub memory_limit: String,
@@ -34,27 +28,30 @@ pub struct SecurityConfig {
     pub timeout_duration: u64,
 }
 
+impl Default for SecurityConfig {
+    fn default() -> Self {
+        Self {
+            cpu_limit: "0.5".into(),
+            memory_limit: "256m".into(),
+            pids_limit: 100,
+            file_descriptor_limit: "64:64".into(),
+            disable_network: true,
+            timeout_duration: 300,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct OutputConfig {
     pub max_output_length: usize,
     pub truncate_suffix: String,
 }
 
-impl Default for BotConfig {
+impl Default for OutputConfig {
     fn default() -> Self {
         Self {
-            security: SecurityConfig {
-                cpu_limit: "0.25".into(),
-                memory_limit: "128m".into(),
-                pids_limit: 100,
-                file_descriptor_limit: "64:64".into(),
-                disable_network: true,
-                timeout_duration: 60,
-            },
-            output: OutputConfig {
-                max_output_length: 1000,
-                truncate_suffix: "...\n(truncated)".into(),
-            },
+            max_output_length: 1000,
+            truncate_suffix: "...\n(truncated)".into(),
         }
     }
 }

@@ -21,7 +21,7 @@ use std::{process::Stdio, time::Duration};
 use tokio::{io::AsyncWriteExt, process::Command};
 use uuid::Uuid;
 
-use crate::{config::BotConfig, runners::LANGUAGES};
+use crate::{config::OutputConfig, runners::LANGUAGES};
 
 #[derive(Debug)]
 pub struct ExecutionResult {
@@ -32,13 +32,13 @@ pub struct ExecutionResult {
 }
 
 pub struct DockerExecutor {
-    pub config: BotConfig,
+    pub output: OutputConfig,
 }
 
 impl DockerExecutor {
     pub fn new() -> Self {
         Self {
-            config: BotConfig::default(),
+            output: OutputConfig::default(),
         }
     }
 
@@ -74,15 +74,15 @@ impl DockerExecutor {
             .arg("--network")
             .arg("none") // Disable network
             .arg("--cpus")
-            .arg(&self.config.security.cpu_limit) // Limit CPU
+            .arg(&config.security_config().cpu_limit) // Limit CPU
             .arg("--memory")
-            .arg(&self.config.security.memory_limit) // Limit memory
+            .arg(&config.security_config().memory_limit) // Limit memory
             .arg("--pids-limit")
-            .arg(self.config.security.pids_limit.to_string()) // Limit number of processes
+            .arg(config.security_config().pids_limit.to_string()) // Limit number of processes
             .arg("--ulimit")
             .arg(format!(
                 "nofile={}",
-                &self.config.security.file_descriptor_limit
+                &config.security_config().file_descriptor_limit
             )) // Limit file descriptors
             .arg("--security-opt")
             .arg("no-new-privileges:true") // Security hardening
@@ -125,7 +125,7 @@ impl DockerExecutor {
 
         // Wait for execution with timeout
         let result = tokio::time::timeout(
-            Duration::from_secs(self.config.security.timeout_duration),
+            Duration::from_secs(config.security_config().timeout_duration),
             child.wait_with_output(),
         )
         .await;

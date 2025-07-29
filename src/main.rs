@@ -16,8 +16,6 @@
  * along with Compiler-Bot.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#![deny(warnings)]
-
 use std::{env, error::Error};
 
 use dotenvy::dotenv;

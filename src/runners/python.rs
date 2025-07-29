@@ -17,6 +17,7 @@
  */
 
 use super::Language;
+use crate::config::SecurityConfig;
 
 pub struct Python;
 
@@ -39,5 +40,9 @@ impl Language for Python {
 
     fn name(&self) -> &'static str {
         "python"
+    }
+
+    fn security_config(&self) -> SecurityConfig {
+        SecurityConfig::default()
     }
 }
