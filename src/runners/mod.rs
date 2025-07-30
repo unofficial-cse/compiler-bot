@@ -21,8 +21,10 @@ use std::{collections::HashMap, sync::LazyLock};
 use crate::config::SecurityConfig;
 
 mod cpp;
+mod javascript;
 mod python;
 mod scala;
+mod typescript;
 
 pub static LANGUAGES: LazyLock<HashMap<&'static str, Box<dyn Language + Send + Sync>>> =
     LazyLock::new(|| {
@@ -30,6 +32,14 @@ pub static LANGUAGES: LazyLock<HashMap<&'static str, Box<dyn Language + Send + S
         hashmap.insert(cpp::Cpp.name(), Box::new(cpp::Cpp));
         hashmap.insert(python::Python.name(), Box::new(python::Python));
         hashmap.insert(scala::Scala.name(), Box::new(scala::Scala));
+        hashmap.insert(
+            javascript::JavaScript.name(),
+            Box::new(javascript::JavaScript),
+        );
+        hashmap.insert(
+            typescript::TypeScript.name(),
+            Box::new(typescript::TypeScript),
+        );
 
         hashmap
     });
