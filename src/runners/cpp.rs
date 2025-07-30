@@ -17,6 +17,7 @@
  */
 
 use super::Language;
+use crate::config::SecurityConfig;
 
 pub struct Cpp;
 
@@ -39,5 +40,9 @@ impl Language for Cpp {
 
     fn name(&self) -> &'static str {
         "cpp"
+    }
+
+    fn security_config(&self) -> SecurityConfig {
+        SecurityConfig::default()
     }
 }
